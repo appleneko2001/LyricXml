@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -27,6 +28,7 @@ namespace LyricXml
         private const string Attribute_Artist = "artist";
         private const string Attribute_Album = "album";
         private const string Attribute_Provider = "provider";
+        private const string Attribute_Languages = "languages";
 
         private Dictionary<string, string> _attributes;
         public Dictionary<string, string> Attributes => _attributes;
@@ -66,9 +68,14 @@ namespace LyricXml
         
         public Lyric(string xmlData)
         {
-            using (var reader = XmlReader.Create(xmlData))
+            using (var strReader = new StringReader(xmlData))
             {
-                ParseProcedure(reader);
+                using (var reader = XmlReader.Create(strReader, _readerSettings))
+                {
+                    _attributes = new Dictionary<string, string>();
+                    _timelines = new List<LyricTimeline>();
+                    ParseProcedure(reader);
+                }
             }
         }
 
@@ -104,23 +111,19 @@ namespace LyricXml
             {
                 switch (reader.NodeType)
                 {
-                    case XmlNodeType.Document:
+                    case XmlNodeType.Element:
                         if (reader.Name.ToLower() == RootTag)
                         {
-                            for (var i = 0; i < Math.Min(reader.AttributeCount, RootMaxAttributesCount); i++)
-                            {
-                                var pair = Utils.GetAttribute(reader, i);
-                                _attributes.Add(pair.Key.ToLower(), pair.Value);
+                            while (reader.MoveToNextAttribute()) {
+                                _attributes.Add(reader.Name.ToLower(), reader.Value);
                             }
+                            break;
                         }
                         else
                         {
-                            throw new ArgumentException($"Tag {reader.Name} is not an valid root tag.");
+                            var timeline = await LyricTimeline.Parse(reader);
+                            _timelines.Add(timeline);
                         }
-                        break;
-                    case XmlNodeType.Element:
-                        var timeline = await LyricTimeline.Parse(reader);
-                        _timelines.Add(timeline);
                         break;
                     case XmlNodeType.EndElement:
                         if(reader.Name.ToLower() == RootTag) 
@@ -132,26 +135,56 @@ namespace LyricXml
 
         public string ToXml()
         {
-            var stringBuilder = new StringBuilder();
-            using (var writer = XmlWriter.Create(stringBuilder, _writerSettings))
+            
+            using (var stream = new MemoryStream())
             {
-                writer.WriteStartDocument();
-                writer.WriteStartElement(Utils.FirstCharToUpper(RootTag));
-
-                foreach (var attribute in Attributes)
+                using (var writer = XmlWriter.Create(stream, _writerSettings))
                 {
-                    writer.WriteAttributeString(attribute.Key, attribute.Value);
-                }
-
-                foreach (var timeline in Timelines)
-                {
-                    timeline.WriteXml(writer);
-                }
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement(Utils.FirstCharToUpper(RootTag));
                 
-                writer.WriteEndElement();
+                    foreach (var attribute in Attributes)
+                    {
+                        writer.WriteAttributeString(null, attribute.Key, null, attribute.Value);
+                    }
+
+                    foreach (var timeline in Timelines)
+                    {
+                        timeline.WriteXml(writer);
+                    }
+                
+                    writer.WriteEndElement();
+                }
+
+                return Encoding.UTF8.GetString(stream.ToArray());
+            }
+        }
+
+        public string[] Languages
+        {
+            get
+            {
+                if (!Attributes.ContainsKey(Attribute_Languages))
+                    return Array.Empty<string>();
+                return Attributes[Attribute_Languages].Split(',');
+            }
+        }
+
+        public void AddLanguage(string codeName)
+        {
+            var attr = AttributeGetter(Attribute_Languages);
+
+            if (attr is null)
+            {
+                AttributeSetter(Attribute_Languages, codeName);
+                return;
             }
 
-            return stringBuilder.ToString();
+            if(attr.Length > 0)
+                attr += ",";
+            attr += codeName;
+            
+            AttributeSetter(Attribute_Languages, attr);
         }
     }
 }

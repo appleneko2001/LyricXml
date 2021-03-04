@@ -15,7 +15,7 @@ namespace LyricXml
         private Dictionary<string, string> _elements;
         
         public Dictionary<string, string> Elements => _elements;
-        
+
         public TimeSpan Timestamp = TimeSpan.Zero;
 
         public LyricTimeline()
@@ -29,13 +29,11 @@ namespace LyricXml
             {
                 var timeline = new LyricTimeline();
 
-                for (var i = 0; i < Math.Min(reader.AttributeCount, 4); i++)
-                {
-                    var pair = Utils.GetAttribute(reader, i);
-                    switch (pair.Key.ToLower())
+                while (reader.MoveToNextAttribute()) {
+                    switch (reader.Name.ToLower())
                     {
                         case LyricTimelineTimestampAttr:
-                            timeline.Timestamp = TimeSpan.Parse(pair.Value);
+                            timeline.Timestamp = TimeSpan.Parse(reader.Value);
                             break;
                         default:
                             break;
@@ -63,19 +61,16 @@ namespace LyricXml
                         case XmlNodeType.Element:
                             if (reader.Name.ToLower() == LyricTimelineItem)
                             {
-                                for (var i = 0; i < Math.Min(reader.AttributeCount, 4); i++)
-                                {
-                                    var pair = Utils.GetAttribute(reader, i);
-                                    switch (pair.Key.ToLower())
+                                while (reader.MoveToNextAttribute()) {
+                                    switch (reader.Name.ToLower())
                                     {
                                         case LyricTimelineItemLanguageAttr:
-                                            lang = pair.Value;
+                                            lang = reader.Value;
                                             break;
                                         default:
                                             break;
                                     }
                                 }
-
                                 awaitingText = true;
                             }
                             break;
@@ -95,7 +90,7 @@ namespace LyricXml
                             }
                             break;
                         default:
-                            throw new NotSupportedException($"Cannot parse element ");
+                            break;
                     }
                 }
                 

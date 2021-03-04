@@ -7,13 +7,6 @@ namespace LyricXml
 {
     public class Utils
     {
-        public static KeyValuePair<string, string> GetAttribute(XmlReader reader, int index)
-        {
-            var key = reader.GetAttribute(index);
-            var value = reader[key];
-            return new KeyValuePair<string, string>(key, value);
-        }
-        
         public static string FirstCharToUpper(string input) =>
             input switch
             {
@@ -21,5 +14,10 @@ namespace LyricXml
                 "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
                 _ => input.First().ToString().ToUpper() + input.Substring(1)
             };
+
+        public static bool StartOrEndWith(string target, string find)
+        {
+            return target.StartsWith(find) && target.EndsWith(find);
+        }
     }
 }
