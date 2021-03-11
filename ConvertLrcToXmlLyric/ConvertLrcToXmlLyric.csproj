@@ -9,4 +9,8 @@
       <ProjectReference Include="..\LyricXml\LyricXml.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Appleneko2001.LrcParser" Version="1.0.4" />
+    </ItemGroup>
+
 </Project>

@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricXml", "LyricXml\LyricX
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertLrcToXmlLyric", "ConvertLrcToXmlLyric\ConvertLrcToXmlLyric.csproj", "{57450A9F-5A3F-4B4C-9920-BDCB745C46A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opportunity.LrcParser", "LrcParser\Opportunity.LrcParser\Opportunity.LrcParser.csproj", "{8F9597E6-2BA3-4FBC-A9D1-4B41F88E431B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{57450A9F-5A3F-4B4C-9920-BDCB745C46A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57450A9F-5A3F-4B4C-9920-BDCB745C46A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57450A9F-5A3F-4B4C-9920-BDCB745C46A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F9597E6-2BA3-4FBC-A9D1-4B41F88E431B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F9597E6-2BA3-4FBC-A9D1-4B41F88E431B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F9597E6-2BA3-4FBC-A9D1-4B41F88E431B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F9597E6-2BA3-4FBC-A9D1-4B41F88E431B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
